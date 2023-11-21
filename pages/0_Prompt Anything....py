@@ -36,16 +36,17 @@ def chat(prompt):
     return response.result
 
 with st.sidebar:
-    
-    if st.button("Clear Chat",key="clear_chat"):
-        st.session_state.messages1 = ""
-        st.session_state.messages1 = [{"role": "assistant", "content": "Hello there! Ask me anything..."}]
-        clear_prompt()
+
     st.write("Please provide your Palm API Key:")
     API_KEY = st.text_input("Enter your Google PaLM API Key here ")
     if API_KEY:
         palm.configure(api_key=API_KEY)
     st.write("[Get your own API KEY here for free](https://makersuite.google.com/app/apikey)")
+
+    if st.button("Clear Chat",key="clear_chat"):
+        st.session_state.messages1 = ""
+        st.session_state.messages1 = [{"role": "assistant", "content": "Hello there! Ask me anything..."}]
+        clear_prompt()
         
         
 st.title("💬 Prompt Bot") 
