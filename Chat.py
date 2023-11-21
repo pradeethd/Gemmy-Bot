@@ -4,7 +4,7 @@ import time
 import web_scrapers
 
 st.set_page_config(
-    page_title="Chatbot",
+    page_title="PaLM Bot",
     page_icon="💬",
 )
 
@@ -47,7 +47,7 @@ with st.sidebar:
         st.session_state.messages = [{"role": "assistant", "content": "Hello there! I am a simple chatbot. How can I assist you today?"}]
         clear_prompt()
         
-st.title("💬 Chatbot") 
+st.title("💬 PaLM Bot") 
         
 # Initialize chat history
 if "messages" not in st.session_state:
