@@ -1,14 +1,23 @@
 import streamlit as st 
+from streamlit_extras.switch_page_button import switch_page 
+from st_pages import Page, show_pages
+import extra_streamlit_components as stx
 from pypdf import PdfReader
 import google.generativeai as palm
 import textwrap
 import numpy as np
 import pandas as pd
 
+
 st.set_page_config(
     page_title="Ask PDF",
     page_icon="📄",
 )
+
+@st.cache_resource(experimental_allow_widgets=True)
+def get_manager():
+    return stx.CookieManager()
+cookie_manager = get_manager()
 
 def clear_prompt():
         prompt = ""
@@ -81,11 +90,12 @@ def main(text,qn):
     return prompt,answer
 
 with st.sidebar:
-    st.write("Please provide your Palm API Key:")
+    st.write("Please provide your Palm API Key (ignore if already provided):  ")
     API_KEY = st.text_input("Enter your Google PaLM API Key here ")
     if API_KEY:
+        cookie_manager.set("api_cookie" , API_KEY)
         palm.configure(api_key=API_KEY)
-    st.write("[Get your own API KEY here for free](https://makersuite.google.com/app/apikey)")
+    st.write("Don't have one.. Get your own [API KEY here](https://makersuite.google.com/app/apikey) (Yes.. it's FREE)")
     
     if st.button("Clear Chat",key="clear_chat"):
         st.session_state.qandas = ""
@@ -102,6 +112,22 @@ pdf = st.file_uploader("Upload your PDF", type="pdf")
 if pdf: 
     text = extract_text_from_pdf(pdf) 
 
+api_key = cookie_manager.get(cookie="api_cookie")
+
+if api_key is not None:
+    API_KEY = api_key
+    show_pages(
+    [
+        Page("Chat.py", "Chat", "💬"),
+        Page("pages/1_Ask PDF.py", "Ask PDF", "📄"),
+        Page("pages/2_Ask Article.py", "Ask Article", "🌐"),
+        Page("pages/3_Ask Text.py", "Ask Text", "📜"),
+    ]
+    )
+    palm.configure(api_key=API_KEY)
+else:
+    switch_page("Welcome")
+    
 if "qandas" not in st.session_state:
     st.session_state.qandas = [{"role": "assistant", "content": "Hi there! Upload your PDF and ask questions..."}]
 
