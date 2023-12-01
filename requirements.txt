@@ -8,7 +8,6 @@ streamlit==1.28.2
 google-generativeai
 textwrap3
 streamlit_extras
-extra_streamlit_components
 st_pages
 
 

@@ -1,7 +1,6 @@
 import streamlit as st 
 from streamlit_extras.switch_page_button import switch_page 
 from st_pages import Page, show_pages
-import extra_streamlit_components as stx
 from pypdf import PdfReader
 import google.generativeai as palm
 import textwrap
@@ -13,10 +12,17 @@ st.set_page_config(
     page_icon="📄",
 )
 
-@st.cache_resource(experimental_allow_widgets=True)
-def get_manager():
-    return stx.CookieManager()
-cookie_manager = get_manager()
+show_pages(
+    [
+        Page("pages/4_Welcome.py", "Welcome", "👋"),
+        Page("Chat.py", "Chat", "💬"),
+        Page("pages/0_Text & Code Generator.py", "Generate Texts & Codes", "📜"),
+        Page("pages/1_Ask PDF.py", "Ask from PDF", "📄"),
+        Page("pages/2_Ask Article.py", "Ask from Article", "🌐"),
+        Page("pages/3_Ask Text.py", "Ask from Text", "📃")
+    ]
+)
+
 
 def clear_prompt():
         prompt = ""
@@ -113,7 +119,7 @@ with st.sidebar:
     st.write("Please provide your Palm API Key (ignore if already provided):  ")
     API_KEY = st.text_input("Enter your Google PaLM API Key here ")
     if API_KEY:
-        cookie_manager.set("api_cookie" , API_KEY)
+        st.session_state.api_key = API_KEY
         palm.configure(api_key=API_KEY)
     st.write("Don't have one.. Get your own [API KEY here](https://makersuite.google.com/app/apikey) (Yes.. it's FREE)")
     
@@ -126,21 +132,22 @@ with st.sidebar:
 st.title("Chat with any Text:") 
 text = st.text_area(label="Enter your text here: (max: 1000 words)", max_chars=10000, height = 250, placeholder="Write and ask your questions...")
 
-api_key = cookie_manager.get(cookie="api_cookie")
+if "api_key" not in st.session_state:
+    switch_page("Welcome")
 
-if api_key is not None:
-    API_KEY = api_key
+if "api_key" in st.session_state:
+    API_KEY = st.session_state.api_key
+    palm.configure(api_key=API_KEY)
     show_pages(
     [
         Page("Chat.py", "Chat", "💬"),
-        Page("pages/1_Ask PDF.py", "Ask PDF", "📄"),
-        Page("pages/2_Ask Article.py", "Ask Article", "🌐"),
-        Page("pages/3_Ask Text.py", "Ask Text", "📜"),
+        Page("pages/0_Text & Code Generator.py", "Generate Texts & Codes", "📜"),
+        Page("pages/1_Ask PDF.py", "Ask from PDF", "📄"),
+        Page("pages/2_Ask Article.py", "Ask from Article", "🌐"),
+        Page("pages/3_Ask Text.py", "Ask from Text", "📃")
     ]
-    )
-    palm.configure(api_key=API_KEY)
-else:
-    switch_page("Welcome")
+)
+
 
 if text:
     if "qandas2" not in st.session_state:

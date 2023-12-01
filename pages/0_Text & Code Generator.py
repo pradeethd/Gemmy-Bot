@@ -1,12 +1,12 @@
 import streamlit as st
-from st_pages import Page, show_pages
 from streamlit_extras.switch_page_button import switch_page 
-import google.generativeai as palm
+from st_pages import Page, show_pages
+import google.generativeai as genai
 import time
 import web_scrapers
 
 st.set_page_config(
-    page_title="PaLM Bot",
+    page_title="Prompt Bot",
     page_icon="💬",
 )
 
@@ -21,53 +21,56 @@ show_pages(
     ]
 )
 
+
+
 defaults = {
-  'model': 'models/chat-bison-001',
-  'temperature': 0.25,
+  'model': 'models/text-bison-001',
+  'temperature': 0.7,
   'candidate_count': 1,
   'top_k': 40,
   'top_p': 0.95,
+  'max_output_tokens': 1024,
+  'stop_sequences': [],
+  'safety_settings': [{"category":"HARM_CATEGORY_DEROGATORY","threshold":4},{"category":"HARM_CATEGORY_TOXICITY","threshold":4},{"category":"HARM_CATEGORY_VIOLENCE","threshold":4},{"category":"HARM_CATEGORY_SEXUAL","threshold":4},{"category":"HARM_CATEGORY_MEDICAL","threshold":4},{"category":"HARM_CATEGORY_DANGEROUS","threshold":4}],
 }
-context = ""
-examples = []
-messages = [
-]
+
+Prompt = ""
 
 def clear_prompt():
-    context = ""
-    examples = []
-    messages = []
-    
-def chat(request):
-      messages.append(request)
-      response = palm.chat(
-      **defaults,
-      context=context,
-      examples=examples,
-      messages=messages
-      )
-      return response.last # Response of the AI to your most recent request
+   Prompt = ""
+
+def chat(prompt):
+    global Prompt
+    Prompt += (prompt + "\n")
+    response = genai.generate_text(
+    **defaults,
+    prompt=Prompt
+    )
+    return response.result
 
 with st.sidebar:
-    st.write("Please provide your Palm API Key (ignore if already provided): ")
+
+    st.write("Please provide your Palm API Key (ignore if already provided):  ")
     API_KEY = st.text_input("Enter your Google PaLM API Key here ")
     if API_KEY:
         st.session_state.api_key = API_KEY
-        palm.configure(api_key=API_KEY)
+        genai.configure(api_key=API_KEY)
     st.write("Don't have one.. Get your own [API KEY here](https://makersuite.google.com/app/apikey) (Yes.. it's FREE)")
 
     if st.button("Clear Chat",key="clear_chat"):
-        st.session_state.messages = ""
-        st.session_state.messages = [{"role": "assistant", "content": "Hello there! I am a simple chatbot. How can I assist you today?"}]
+        st.session_state.messages1 = ""
+        st.session_state.messages1 = [{"role": "assistant", "content": "Hello there! Ask me anything..."}]
         clear_prompt()
-
-st.title("💬 PaLM Bot")
-
+        
+        
+st.title("💬 Prompt Bot") 
+        
 if "api_key" not in st.session_state:
     switch_page("Welcome")
 
 if "api_key" in st.session_state:
     API_KEY = st.session_state.api_key
+    genai.configure(api_key=API_KEY)
     show_pages(
     [
         Page("Chat.py", "Chat", "💬"),
@@ -78,13 +81,13 @@ if "api_key" in st.session_state:
     ]
 )
 
-         
+    
 # Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Hello there! I am a simple chatbot. How can I assist you today?"}]
+if "messages1" not in st.session_state:
+    st.session_state.messages1 = [{"role": "assistant", "content": "Hi there! I am PalmBot. How can I assist you today?"}]
 
 # Display chat messages from history on app rerun
-for message in st.session_state.messages:
+for message in st.session_state.messages1:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
         
@@ -117,26 +120,24 @@ def get_response(prompt):
             pass
     
     try:    
-        for chunk in assistant_response.split():
-                full_response += chunk + " "
-                time.sleep(0.05)
-                # Add a blinking cursor to simulate typing
-                message_placeholder.markdown(full_response + "▌")
-        message_placeholder.markdown(full_response)
+        # Add a blinking cursor to simulate typing
+        message_placeholder.write(assistant_response + "▌")
+        message_placeholder.write(assistant_response)
         # Add assistant response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": full_response})
+        st.session_state.messages1.append({"role": "assistant", "content": assistant_response})
     except:
         pass
-        
+    
 # Accept user input
-if prompt := st.chat_input("What's up?"):
+if prompt := st.chat_input("What's on your mind?"):
     if not API_KEY:
         st.info("Please add your PaLM API key to continue.")
         st.stop()
     # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state.messages1.append({"role": "user", "content": prompt})
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
     get_response(prompt)
+
 
