@@ -20,8 +20,12 @@ st.write("PalmBot is a conversational AI app that utilizes Google's PaLM 2 LLMs,
 st.write("So what are you waiting for? Try it out for yourself!")
 st.write("Before trying, please provide your PaLM API Key below to continue..")
 API_KEY = st.text_input("Enter your Google PaLM API Key here ")
+st.write("Don't have one? Don't worry, click the below button to try instantly")
+try_now = st.button("Try Now",key="try_now")
+if try_now:
+    API_KEY = "AIzaSyBsodUp4e4dWy_eK2bacgZS520B_18AU-I"
+st.write("Been here already?.. You can get your own [API KEY here](https://makersuite.google.com/app/apikey) (Yes.. it's FREE)")
 if API_KEY:
     st.session_state.api_key = API_KEY
     switch_page("Chat")
         
-st.write("Don't have one.. Get your own [API KEY here](https://makersuite.google.com/app/apikey) (Yes.. it's FREE)")
