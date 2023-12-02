@@ -58,7 +58,7 @@ with st.sidebar:
 
     if st.button("Clear Chat",key="clear_chat"):
         st.session_state.messages = ""
-        st.session_state.messages = [{"role": "assistant", "content": "Hello there! I am a simple chatbot. How can I assist you today?"}]
+        st.session_state.messages = [{"role": "assistant", "content": "Hi there! I am PalmBot. How can I assist you today?"}]
         clear_prompt()
 
 st.title("💬 PaLM Bot")
