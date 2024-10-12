@@ -1,12 +1,12 @@
 import streamlit as st
 from st_pages import Page, show_pages
 from streamlit_extras.switch_page_button import switch_page 
-import google.generativeai as palm
+import google.generativeai as genai
 import time
 import web_scrapers
 
 st.set_page_config(
-    page_title="PaLM Bot",
+    page_title="Gemmy Bot",
     page_icon="💬",
 )
 
@@ -21,47 +21,51 @@ show_pages(
     ]
 )
 
-defaults = {
-  'model': 'models/chat-bison-001',
-  'temperature': 0.25,
-  'candidate_count': 1,
-  'top_k': 40,
-  'top_p': 0.95,
+generation_config = {
+  "temperature": 1,
+  "top_p": 0.95,
+  "top_k": 40,
+  "max_output_tokens": 8192,
+  "response_mime_type": "text/plain",
 }
+
+
+model = genai.GenerativeModel(model_name="gemini-1.5-flash",generation_config=generation_config)
 context = ""
 examples = []
 messages = [
 ]
+
+chat = model.start_chat(
+    history=[
+        {"role": "model", "parts": "Hey, user! What's up?"}
+    ]
+)
 
 def clear_prompt():
     context = ""
     examples = []
     messages = []
     
-def chat(request):
+def chat_prompt(request):
       messages.append(request)
-      response = palm.chat(
-      **defaults,
-      context=context,
-      examples=examples,
-      messages=messages
-      )
-      return response.last # Response of the AI to your most recent request
+      response = chat.send_message(request)
+      return response.text 
 
 with st.sidebar:
-    st.write("Please provide your Palm API Key (ignore if already provided): ")
-    API_KEY = st.text_input("Enter your Google PaLM API Key here ")
+    st.write("Please provide your Gemini API Key (ignore if already provided): ")
+    API_KEY = st.text_input("Enter your Google Gemini API Key here ")
     if API_KEY:
         st.session_state.api_key = API_KEY
-        palm.configure(api_key=API_KEY)
-    st.write("Don't have one.. Get your own [API KEY here](https://makersuite.google.com/app/apikey) (Yes.. it's FREE)")
+        genai.configure(api_key=API_KEY)
+    st.write("Don't have one.. Get your own [API KEY here](https://aistudio.google.com/app/apikey) (Yes.. it's FREE)")
 
     if st.button("Clear Chat",key="clear_chat"):
         st.session_state.messages = ""
-        st.session_state.messages = [{"role": "assistant", "content": "Hi there! I am PalmBot. How can I assist you today?"}]
+        st.session_state.messages = [{"role": "assistant", "content": "Hi there! I am genaiBot. How can I assist you today?"}]
         clear_prompt()
 
-st.title("💬 PaLM Bot")
+st.title("💬 Gemmy Bot")
 
 if "api_key" not in st.session_state:
     switch_page("Welcome")
@@ -131,7 +135,7 @@ def get_response(prompt):
 # Accept user input
 if prompt := st.chat_input("What's up?"):
     if not API_KEY:
-        st.info("Please add your PaLM API key to continue.")
+        st.info("Please add your Gemini API key to continue.")
         st.stop()
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})

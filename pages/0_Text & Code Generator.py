@@ -23,35 +23,41 @@ show_pages(
 
 
 
-defaults = {
-  'model': 'models/text-bison-001',
-  'temperature': 0.7,
-  'candidate_count': 1,
-  'top_k': 40,
-  'top_p': 0.95,
-  'max_output_tokens': 1024,
-  'stop_sequences': [],
-  'safety_settings': [{"category":"HARM_CATEGORY_DEROGATORY","threshold":4},{"category":"HARM_CATEGORY_TOXICITY","threshold":4},{"category":"HARM_CATEGORY_VIOLENCE","threshold":4},{"category":"HARM_CATEGORY_SEXUAL","threshold":4},{"category":"HARM_CATEGORY_MEDICAL","threshold":4},{"category":"HARM_CATEGORY_DANGEROUS","threshold":4}],
+generation_config = {
+  "temperature": 1,
+  "top_p": 0.95,
+  "top_k": 40,
+  "max_output_tokens": 8192,
+  "response_mime_type": "text/plain",
 }
 
-Prompt = ""
+
+model = genai.GenerativeModel(model_name="gemini-1.5-flash",generation_config=generation_config)
+context = ""
+examples = []
+messages = [
+]
+
+chat = model.start_chat(
+    history=[
+        {"role": "model", "parts": "Hey, user! What's up?"}
+    ]
+)
 
 def clear_prompt():
-   Prompt = ""
-
-def chat(prompt):
-    global Prompt
-    Prompt += (prompt + "\n")
-    response = genai.generate_text(
-    **defaults,
-    prompt=Prompt
-    )
-    return response.result
+    context = ""
+    examples = []
+    messages = []
+    
+def chat_prompt(request):
+      messages.append(request)
+      response = chat.send_message(request)
+      return response.text 
 
 with st.sidebar:
 
-    st.write("Please provide your Palm API Key (ignore if already provided):  ")
-    API_KEY = st.text_input("Enter your Google PaLM API Key here ")
+    st.write("Please provide your genai API Key (ignore if already provided):  ")
+    API_KEY = st.text_input("Enter your Google genai API Key here ")
     if API_KEY:
         st.session_state.api_key = API_KEY
         genai.configure(api_key=API_KEY)
@@ -84,7 +90,7 @@ if "api_key" in st.session_state:
     
 # Initialize chat history
 if "messages1" not in st.session_state:
-    st.session_state.messages1 = [{"role": "assistant", "content": "Hi there! I am PalmBot. How can I assist you today?"}]
+    st.session_state.messages1 = [{"role": "assistant", "content": "Hi there! I am genaiBot. How can I assist you today?"}]
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages1:
@@ -131,7 +137,7 @@ def get_response(prompt):
 # Accept user input
 if prompt := st.chat_input("What's on your mind?"):
     if not API_KEY:
-        st.info("Please add your PaLM API key to continue.")
+        st.info("Please add your genai API key to continue.")
         st.stop()
     # Add user message to chat history
     st.session_state.messages1.append({"role": "user", "content": prompt})
