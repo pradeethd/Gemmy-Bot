@@ -114,7 +114,7 @@ def get_response(prompt):
             url = "Ask_Text"
             response = "Go here matey! [Ask Text](%s)" % url
         else:
-            response = chat(prompt)
+            response = chat_prompt(prompt)
         try:
             assistant_response = response
         except NameError:
