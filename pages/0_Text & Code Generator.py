@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page 
 from st_pages import Page, show_pages
+import extra_streamlit_components as stx
 import google.generativeai as genai
 import time
 import web_scrapers
@@ -9,6 +10,11 @@ st.set_page_config(
     page_title="Prompt Bot",
     page_icon="💬",
 )
+
+@st.cache_resource(experimental_allow_widgets=True)
+def get_manager():
+    return stx.CookieManager()
+cookie_manager = get_manager()
 
 show_pages(
     [
@@ -35,7 +41,7 @@ generation_config = {
 model = genai.GenerativeModel(model_name="gemini-1.5-flash",generation_config=generation_config)
 context = ""
 examples = []
-messages = [
+messages1 = [
 ]
 
 chat = model.start_chat(
@@ -50,18 +56,18 @@ def clear_prompt():
     messages = []
     
 def chat_prompt(request):
-      messages.append(request)
+      messages1.append(request)
       response = chat.send_message(request)
       return response.text 
 
 with st.sidebar:
 
-    st.write("Please provide your genai API Key (ignore if already provided):  ")
-    API_KEY = st.text_input("Enter your Google genai API Key here ")
+    st.write("Please provide your Gemini API Key (ignore if already provided):  ")
+    API_KEY = st.text_input("Enter your Google Gemini API Key here ")
     if API_KEY:
-        st.session_state.api_key = API_KEY
+        cookie_manager.set("api_cookie" , API_KEY)
         genai.configure(api_key=API_KEY)
-    st.write("Don't have one.. Get your own [API KEY here](https://makersuite.google.com/app/apikey) (Yes.. it's FREE)")
+    st.write("Don't have one.. Get your own [API KEY here](https://aistudio.google.com/app/apikey) (Yes.. it's FREE)")
 
     if st.button("Clear Chat",key="clear_chat"):
         st.session_state.messages1 = ""
@@ -90,7 +96,7 @@ if "api_key" in st.session_state:
     
 # Initialize chat history
 if "messages1" not in st.session_state:
-    st.session_state.messages1 = [{"role": "assistant", "content": "Hi there! I am genaiBot. How can I assist you today?"}]
+    st.session_state.messages1 = [{"role": "assistant", "content": "Hi there! I am Gemmy Bot. How can I assist you today?"}]
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages1:
@@ -119,7 +125,7 @@ def get_response(prompt):
             url = "Ask_Text"
             response = "Go here matey! [Ask Text](%s)" % url
         else:
-            response = chat(prompt)
+            response = chat_prompt(prompt)
         try:
             assistant_response = response
         except NameError:

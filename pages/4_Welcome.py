@@ -1,10 +1,16 @@
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page 
+import extra_streamlit_components as stx
 from st_pages import Page, show_pages
 st.set_page_config(
     page_title="Gemmy Bot | Welcome",
     page_icon="💬",
 )
+
+@st.cache_resource(experimental_allow_widgets=True)
+def get_manager():
+    return stx.CookieManager()
+cookie_manager = get_manager()
 
 show_pages(
     [   Page("pages/4_Welcome.py", "Welcome", "👋"),

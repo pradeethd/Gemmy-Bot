@@ -1,6 +1,7 @@
 import streamlit as st
 from st_pages import Page, show_pages
 from streamlit_extras.switch_page_button import switch_page 
+import extra_streamlit_components as stx
 import google.generativeai as genai
 import time
 import web_scrapers
@@ -9,6 +10,11 @@ st.set_page_config(
     page_title="Gemmy Bot",
     page_icon="💬",
 )
+
+@st.cache_resource(experimental_allow_widgets=True)
+def get_manager():
+    return stx.CookieManager()
+cookie_manager = get_manager()
 
 show_pages(
     [
