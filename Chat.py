@@ -42,11 +42,10 @@ examples = []
 messages = [
 ]
 
-chat = model.start_chat(
-    history=[
+history=[
         {"role": "model", "parts": "Hey, user! What's up?"}
     ]
-)
+
 
 def clear_prompt():
     context = ""
@@ -54,8 +53,11 @@ def clear_prompt():
     messages = []
     
 def chat_prompt(request):
+      chat = model.start_chat(history=history)
       messages.append(request)
+      history.append({"role": "user", "parts": request})
       response = chat.send_message(request)
+      history.append({"role": "model", "parts": response})
       return response.text 
 
 with st.sidebar:
