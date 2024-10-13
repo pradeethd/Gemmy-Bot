@@ -2,13 +2,6 @@
 
 **Gemmy Bot** is an advanced conversational AI app leveraging **Google's Gemini LLMs**, designed for interactive and informative engagements. Users can upload content like **PDFs, articles, and text passages**, allowing for complex Q&A sessions. The app also enables **text and code generation**, making it ideal for various tasks, from general inquiries to programming assistance.
 
-<h2>Tech Stack:</h2>
-
-_**Python:**_ Core language <br />
-_**Streamlit:**_ For building the web interface <br />
-_**PyPDF:**_ To parse and extract information from PDF files <br />
-_**BeautifulSoup:**_ To scrape and interact with web content <br />
-
 <h2>Key Features:</h2>
 
 _**AI Chatbot:**_ Engages users with human-like conversations using Google's Gemini LLMs. <br />
@@ -18,6 +11,13 @@ _**Text Passage Processing:**_ Supports uploading text passages and enables user
 _**Web Scraping with Articles:**_ Fetches and interacts with content from URLs and web articles for question-answering purposes. <br />
 _**Google Search Integration:**_ Use the google keyword to search directly from the chatbot (e.g., "google What is the weather in Chennai?"). <br />
 _**StackOverflow Search for Coding Help:**_ Use the stack keyword to search StackOverflow for solutions to coding-related problems. <br />
+
+<h2>Tech Stack:</h2>
+
+_**Python:**_ Core language <br />
+_**Streamlit:**_ For building the web interface <br />
+_**PyPDF:**_ To parse and extract information from PDF files <br />
+_**BeautifulSoup:**_ To scrape and interact with web content <br />
 
 <h2>Usage Examples:</h2>
 
