@@ -4,8 +4,8 @@
 
 <h2>Tech Stack:</h2>
 
-_**Python:** _Core language <br />
-_**Streamlit:** _For building the web interface <br />
+_**Python:**_ Core language <br />
+_**Streamlit:**_ For building the web interface <br />
 _**PyPDF:**_ To parse and extract information from PDF files <br />
 _**BeautifulSoup:**_ To scrape and interact with web content <br />
 
